@@ -1,3 +1,4 @@
+
 (function () {
     'use strict';
 
@@ -11,7 +12,11 @@
         addDialog: document.querySelector('.dialog-container')
     };
 
-
+    //Use IndexedDB to save data 
+    localforage.config({
+        driver: localforage.IndexedDB,
+        name: 'Taller1-localStorage'
+    });
     /*****************************************************************************
      *
      * Event listeners for UI elements
@@ -171,42 +176,28 @@
 
     // Save list time tables
     app.saveSelectedTimeTables = function () {
-        var timeTables = JSON.stringify(app.selectedTimetables);
-        localStorage.selectedTimetables = timeTables;
+        app.selectedTimetables.forEach(function (timeTable) {
+            localforage.setItem(timeTable.key, timeTable.label).then(function (value) {
+                console.log(timeTable.key +" saved successfully");
+            }).catch(function(err) {
+                console.log(timeTable.key +" can't be saved");
+            });
+        });
     };
 
-    app.selectedTimetables = localStorage.selectedTimetables;
-    if (app.selectedTimetables) {
-        app.selectedTimetables = JSON.parse(app.selectedTimetables);
-        app.selectedTimetables.forEach(function (timeTable) {
-            app.getSchedule(timeTable.key, timeTable.label);
-        });
-    } else {
-        /* The user is using the app for the first time, or the user has not
-         * saved any cities, so show the user some fake data. A real app in this
-         * scenario could guess the user's location via IP lookup and then inject
-         * that data into the page.
-         */
-        app.getSchedule(initialStationTimetable.key, initialStationTimetable.label);
-        app.selectedTimetables = [
-            { key: initialStationTimetable.key, label: initialStationTimetable.label }
-        ];
-        app.saveSelectedTimeTables();
-    }
+    localforage.length().then(function(numberOfKeys) {
+        if(numberOfKeys>0){
+            localforage.iterate(function(value, key, iterationNumber) {
+                app.getSchedule(key, value);
+            });
+        }else{
+            app.getSchedule(initialStationTimetable.key, initialStationTimetable.label);
+            app.selectedTimetables = [{ key: initialStationTimetable.key, label: initialStationTimetable.label }];
+            app.saveSelectedTimeTables();
+        }
 
-    /************************************************************************
-     *
-     * Code required to start the app
-     *
-     * NOTE: To simplify this codelab, we've used localStorage.
-     *   localStorage is a synchronous API and has serious performance
-     *   implications. It should not be used in production applications!
-     *   Instead, check out IDB (https://www.npmjs.com/package/idb) or
-     *   SimpleDB (https://gist.github.com/inexorabletash/c8069c042b734519680c)
-     ************************************************************************/
-
-    //app.getSchedule('metros/1/bastille/A', 'Bastille, Direction La Défense');
-    // app.selectedTimetables = [
-    //     {key: initialStationTimetable.key, label: initialStationTimetable.label}
-    // ];
+    }).catch(function(err) {
+        // This code runs if there were any errors
+        console.log(err);
+    });
 })();
