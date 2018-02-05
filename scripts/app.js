@@ -39,7 +39,7 @@
             app.selectedTimetables = [];
         }
         app.getSchedule(key, label);
-        app.selectedTimetables.push({key: key, label: label});
+        app.selectedTimetables.push({ key: key, label: label });
         app.toggleAddDialog(false);
     });
 
@@ -88,10 +88,10 @@
         card.querySelector('.card-last-updated').textContent = data.created;
 
         var scheduleUIs = card.querySelectorAll('.schedule');
-        for(var i = 0; i<4; i++) {
+        for (var i = 0; i < 4; i++) {
             var schedule = schedules[i];
             var scheduleUI = scheduleUIs[i];
-            if(schedule && scheduleUI) {
+            if (schedule && scheduleUI) {
                 scheduleUI.querySelector('.message').textContent = schedule.message;
             }
         }
@@ -168,6 +168,30 @@
 
     };
 
+    // Save list time tables
+    // app.saveSelectedTimeTables = function () {
+    //     var timeTables = JSON.stringify(app.selectedTimetables);
+    //     localStorage.selectedTimetables = timeTables;
+    // };
+
+    app.selectedTimetables = localStorage.selectedTimetables;
+    if (!app.selectedTimetables) {
+        app.selectedTimetables = JSON.parse(app.selectedTimetables);
+        app.selectedTimetables.forEach(function (timeTable) {
+            app.getSchedule(timeTable.key, timeTable.label);
+        });
+    } else {
+        /* The user is using the app for the first time, or the user has not
+         * saved any cities, so show the user some fake data. A real app in this
+         * scenario could guess the user's location via IP lookup and then inject
+         * that data into the page.
+         */
+        app.getSchedule(initialStationTimetable.key, initialStationTimetable.label);
+        app.selectedTimetables = [
+            { key: initialStationTimetable.key, label: initialStationTimetable.label }
+        ];
+        //app.saveSelectedTimeTables();
+    }
 
     /************************************************************************
      *
@@ -180,8 +204,8 @@
      *   SimpleDB (https://gist.github.com/inexorabletash/c8069c042b734519680c)
      ************************************************************************/
 
-    app.getSchedule('metros/1/bastille/A', 'Bastille, Direction La Défense');
-    app.selectedTimetables = [
-        {key: initialStationTimetable.key, label: initialStationTimetable.label}
-    ];
+    //app.getSchedule('metros/1/bastille/A', 'Bastille, Direction La Défense');
+    // app.selectedTimetables = [
+    //     {key: initialStationTimetable.key, label: initialStationTimetable.label}
+    // ];
 })();
