@@ -40,6 +40,7 @@
         }
         app.getSchedule(key, label);
         app.selectedTimetables.push({ key: key, label: label });
+        app.saveSelectedTimeTables();
         app.toggleAddDialog(false);
     });
 
@@ -169,10 +170,10 @@
     };
 
     // Save list time tables
-    // app.saveSelectedTimeTables = function () {
-    //     var timeTables = JSON.stringify(app.selectedTimetables);
-    //     localStorage.selectedTimetables = timeTables;
-    // };
+    app.saveSelectedTimeTables = function () {
+        var timeTables = JSON.stringify(app.selectedTimetables);
+        localStorage.selectedTimetables = timeTables;
+    };
 
     app.selectedTimetables = localStorage.selectedTimetables;
     if (app.selectedTimetables) {
@@ -190,7 +191,7 @@
         app.selectedTimetables = [
             { key: initialStationTimetable.key, label: initialStationTimetable.label }
         ];
-        //app.saveSelectedTimeTables();
+        app.saveSelectedTimeTables();
     }
 
     /************************************************************************
