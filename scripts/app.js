@@ -175,7 +175,7 @@
     // };
 
     app.selectedTimetables = localStorage.selectedTimetables;
-    if (!app.selectedTimetables) {
+    if (app.selectedTimetables) {
         app.selectedTimetables = JSON.parse(app.selectedTimetables);
         app.selectedTimetables.forEach(function (timeTable) {
             app.getSchedule(timeTable.key, timeTable.label);
